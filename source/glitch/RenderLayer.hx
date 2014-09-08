@@ -60,22 +60,16 @@ class RenderLayer
 	 */
 	public static var screenHeight:Int = 0;
 	/**
-	 * A static reference to the RenderManager singleton.
-	 */
-	private static var instance(default, null):RenderLayer;
-	/**
 	 * Stores the flixel camera data every frame.
 	 */
-	private var cameraData:BitmapData;
+	private static var cameraData:BitmapData;
 	/**
 	 * The visible on-screen Bitmap to which all data is rendered.
 	 */
-	private var displayMap:Bitmap;
+	private static var displayMap:Bitmap;
 	
-	public function new()
+	public static function init():Void
 	{
-		instance = this;
-		
 		gameWidth = FlxG.width;
 		gameHeight = FlxG.height;
 		
@@ -90,7 +84,7 @@ class RenderLayer
 		displayMap.smoothing = false;
 		displayMap.scaleX = displayMap.scaleY = FlxG.camera.zoom;
 		
-		// Add the displayMap
+		// Add the displayMap to the stage
 		
 		Lib.current.stage.addChild(displayMap);
 		
@@ -99,7 +93,7 @@ class RenderLayer
 		Lib.current.stage.addEventListener(Event.ENTER_FRAME, update);
 	}
 	
-	public function update(?e:Event):Void
+	public static function update(?e:Event):Void
 	{
 		// Grab the on-screen data from flixel
 		
