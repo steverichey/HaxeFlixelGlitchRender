@@ -1,6 +1,6 @@
 # [HaxeFlixel Glitch Render Example](https://github.com/steverichey/HaxeFlixelGlitchRender)
 
-![](https://raw.github.com/steverichey/HaxeFlixelGlitchRender/master/src/screen.png")
+![](https://raw.githubusercontent.com/steverichey/HaxeFlixelGlitchRender/master/screen.png)
 
 Just an example of using JPEG compression glitching to mess with a [HaxeFlixel](http://www.haxeflixel.com) game.
 
