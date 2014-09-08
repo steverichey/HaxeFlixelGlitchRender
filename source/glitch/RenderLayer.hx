@@ -60,6 +60,10 @@ class RenderLayer
 	 */
 	public static var screenHeight:Int = 0;
 	/**
+	 * Set to true after init() is called.
+	 */
+	public static var initialized(default, null):Bool = false;
+	/**
 	 * Stores the flixel camera data every frame.
 	 */
 	private static var cameraData:BitmapData;
@@ -70,27 +74,36 @@ class RenderLayer
 	
 	public static function init():Void
 	{
-		gameWidth = FlxG.width;
-		gameHeight = FlxG.height;
-		
-		screenWidth = Lib.current.stage.stageWidth;
-		screenHeight = Lib.current.stage.stageHeight;
-		
-		cameraData = gameData();
-		
-		// This will actually render our game to the screen.
-		
-		displayMap = new Bitmap(screenData());
-		displayMap.smoothing = false;
-		displayMap.scaleX = displayMap.scaleY = FlxG.camera.zoom;
-		
-		// Add the displayMap to the stage
-		
-		Lib.current.stage.addChild(displayMap);
-		
-		// Then call our update() function once per frame
-		
-		Lib.current.stage.addEventListener(Event.ENTER_FRAME, update);
+		if (!initialized)
+		{
+			gameWidth = FlxG.width;
+			gameHeight = FlxG.height;
+			
+			screenWidth = Lib.current.stage.stageWidth;
+			screenHeight = Lib.current.stage.stageHeight;
+			
+			cameraData = gameData();
+			
+			// This will actually render our game to the screen.
+			
+			displayMap = new Bitmap(screenData());
+			displayMap.smoothing = false;
+			displayMap.scaleX = displayMap.scaleY = FlxG.camera.zoom;
+			
+			// Add the displayMap to the stage
+			
+			Lib.current.stage.addChild(displayMap);
+			
+			// Then call our update() function once per frame
+			
+			Lib.current.stage.addEventListener(Event.ENTER_FRAME, update);
+			
+			initialized = true;
+		}
+		else
+		{
+			clearFX();
+		}
 	}
 	
 	public static function update(?e:Event):Void
@@ -110,7 +123,16 @@ class RenderLayer
 			
 			if (jpegGlitch && FlxG.random.bool(jpegGlitchChance))
 			{
+				// there's not a good way to do this in flash! sadly.
+				// unless you know of a way... let me know!
+				
+				#if !flash
 				cameraData = Encode.jpegGlitch(cameraData, jpegQuality, jpegErrors, jpegGlitchPositionPercent);
+				#end
+			}
+			else
+			{
+				cameraData = Encode.jpegRender(cameraData, jpegQuality);
 			}
 			
 			// This is where you could apply other FX
@@ -133,6 +155,12 @@ class RenderLayer
 	{
 		active = false;
 		jpegGlitch = false;
+		jpegErrors = 1;
+		jpegQuality = 1;
+		jpegGlitchChance = 10;
+		jpegGlitchPositionPercent = 50;
+		cameraData = gameData();
+		displayMap.bitmapData = screenData();
 	}
 	
 	inline private static function screenData():BitmapData
@@ -143,14 +171,5 @@ class RenderLayer
 	inline private static function gameData():BitmapData
 	{
 		return new BitmapData(gameWidth, gameHeight, false, 0xff000000);
-	}
-	
-	inline private static function clear(Data:BitmapData):Void
-	{
-		#if flash
-		return Data.fillRect(Data.rect, 0xff000000);
-		#else
-		return Data.clear(0xff000000);
-		#end
 	}
 }

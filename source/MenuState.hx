@@ -6,7 +6,9 @@ import flixel.FlxState;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.util.FlxGradient;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxColor;
 
 import glitch.RenderLayer;
 
@@ -21,6 +23,8 @@ class MenuState extends FlxState
 	private var percent:FlxText;
 	private var instructions:FlxText;
 	
+	public static var debug:FlxText;
+	
 	override public function create():Void
 	{
 		super.create();
@@ -34,6 +38,8 @@ class MenuState extends FlxState
 		RenderLayer.active = true;
 		RenderLayer.jpegGlitch = true;
 		
+		var gradient:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [FlxColor.BLUE, FlxColor.CYAN]);
+		
 		title = new FlxText(0, 4, FlxG.width, "This is an example of applying glitch FX to HaxeFlixel games.");
 		title.alignment = "center";
 		
@@ -45,9 +51,10 @@ class MenuState extends FlxState
 		percent = new FlxText(0, 70, FlxG.width);
 		
 		instructions = new FlxText(0, 90, FlxG.width);
-		instructions.text = "Press A to toggle JPEG compression.\nPress G to toggle JPEG glitching.\nPress up and down to change number of errors.\nPress left and right to change compression quality.\nPress [ and ] to change glitch chance.\nPress < and > to change glitch position percentage.";
+		instructions.text = "Press J to toggle JPEG compression.\nPress G to toggle JPEG glitching.\nPress up and down to change number of errors.\nPress left and right to change compression quality.\nPress W and S to change glitch chance.\nPress A and D to change glitch position percentage.\nPress R to reset.";
 		instructions.alpha = 0.9;
 		
+		add(gradient);
 		add(title);
 		add(activeText);
 		add(glitch);
@@ -56,20 +63,78 @@ class MenuState extends FlxState
 		add(chance);
 		add(percent);
 		add(instructions);
+		
+		debug = new FlxText(0, FlxG.height - 10, FlxG.width, "hi");
+		add(debug);
 	}
 	
 	override public function update(_):Void
 	{
-		activeText.text = "Glitch layer active? " + boolToString(RenderLayer.active);
+		activeText.text = "JPEG layer active? " + boolToString(RenderLayer.active);
 		glitch.text = "Glitching on? " + boolToString(RenderLayer.jpegGlitch);
 		errors.text = "Number of glitch errors: " + RenderLayer.jpegErrors;
-		quality.text = "JPEG Compression Quality: " + RenderLayer.jpegQuality;
+		quality.text = "JPEG Compression Quality: " + round(RenderLayer.jpegQuality);
 		chance.text = "JPEG Glitch Chance: " + round(RenderLayer.jpegGlitchChance) + "%";
 		percent.text = "JPEG Glitch Minimum Position: " + round(RenderLayer.jpegGlitchPositionPercent) + "% of screen";
 		
-		if (FlxG.keys.justPressed.A)
+		if (FlxG.keys.justPressed.J)
 		{
 			RenderLayer.active = !RenderLayer.active;
+		}
+		
+		if (FlxG.keys.justPressed.G)
+		{
+			RenderLayer.jpegGlitch = !RenderLayer.jpegGlitch;
+		}
+		
+		if (FlxG.keys.justPressed.UP)
+		{
+			RenderLayer.jpegErrors++;
+		}
+		
+		if (FlxG.keys.justPressed.DOWN)
+		{
+			RenderLayer.jpegErrors--;
+		}
+		
+		if (FlxG.keys.justPressed.LEFT)
+		{
+			RenderLayer.jpegQuality -= 0.1;
+		}
+		
+		if (FlxG.keys.justPressed.RIGHT)
+		{
+			RenderLayer.jpegQuality += 0.1;
+		}
+		
+		if (FlxG.keys.justPressed.W)
+		{
+			RenderLayer.jpegGlitchChance += 10;
+		}
+		
+		if (FlxG.keys.justPressed.S)
+		{
+			RenderLayer.jpegGlitchChance -= 10;
+		}
+		
+		if (FlxG.keys.justPressed.A)
+		{
+			RenderLayer.jpegGlitchPositionPercent -= 10;
+		}
+		
+		if (FlxG.keys.justPressed.D)
+		{
+			RenderLayer.jpegGlitchPositionPercent += 10;
+		}
+		
+		RenderLayer.jpegErrors = intBound(RenderLayer.jpegErrors, 0);
+		RenderLayer.jpegQuality = FlxMath.bound(RenderLayer.jpegQuality, 0, 1);
+		RenderLayer.jpegGlitchChance = FlxMath.bound(RenderLayer.jpegGlitchChance, 0, 100);
+		RenderLayer.jpegGlitchPositionPercent = FlxMath.bound(RenderLayer.jpegGlitchPositionPercent, 0, 100);
+		
+		if (FlxG.keys.justPressed.R)
+		{
+			FlxG.resetGame();
 		}
 		
 		super.update(_);
@@ -83,5 +148,10 @@ class MenuState extends FlxState
 	private function round(Value:Float):Float
 	{
 		return FlxMath.roundDecimal(Value, 2);
+	}
+	
+	private function intBound(Value:Int, ?Min:Int, ?Max:Int):Int
+	{
+		return Std.int(FlxMath.bound(Value, Min, Max));
 	}
 }
