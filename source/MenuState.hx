@@ -23,8 +23,6 @@ class MenuState extends FlxState
 	private var percent:FlxText;
 	private var instructions:FlxText;
 	
-	public static var debug:FlxText;
-	
 	override public function create():Void
 	{
 		super.create();
@@ -63,9 +61,6 @@ class MenuState extends FlxState
 		add(chance);
 		add(percent);
 		add(instructions);
-		
-		debug = new FlxText(0, FlxG.height - 10, FlxG.width, "hi");
-		add(debug);
 	}
 	
 	override public function update(_):Void
