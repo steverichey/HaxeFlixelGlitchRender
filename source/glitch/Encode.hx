@@ -1,13 +1,10 @@
 package glitch;
 
-import flixel.FlxG;
-import openfl.display.Loader;
-import openfl.display.LoaderInfo;
-import openfl.events.Event;
-
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.display.BitmapData;
+
+import flixel.FlxG;
 
 #if flash
 import flash.display.JPEGEncoderOptions;
@@ -88,16 +85,8 @@ class Encode
 	static public function byteArrayToBitmapData(Bytes:ByteArray, Width:Int, Height:Int):BitmapData
 	{
 		#if flash
-		var result:BitmapData = new BitmapData(Width, Height);
-		
-		var loader:Loader = new Loader();
-		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
-			function(e:Event) { 
-				result = e.target.content;
-			});
-		loader.loadBytes(Bytes);
-		
-		return result;
+		// for some reason, BitmapData.loadFromBytes() does not exist in flash :(
+		return null;
 		#else
 		return BitmapData.loadFromBytes(Bytes);
 		#end
